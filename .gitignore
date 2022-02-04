@@ -1,0 +1,11 @@
+.DS_Store
+/models*
+
+# vscode
+.vscode/settings.json
+
+# python
+*.pyc
+__pycache__
+
+/models
