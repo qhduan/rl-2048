@@ -1,10 +1,10 @@
 2048 Python & Reinforcement Learning
 ===========
 
-install stable-baselines3
+install dependencies
 
 ```bash
-pip install stable-baselines3
+pip3 install r requirements.txt
 ```
 
 run exists model
