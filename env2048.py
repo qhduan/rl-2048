@@ -1,8 +1,14 @@
 import logic
 import numpy as np
 import gym
-# from torch import nn
-# import torch
+
+
+ACTION_MAP = {
+    0: 'up',
+    1: 'down',
+    2: 'left',
+    3: 'right'
+}
 
 
 class Env2048(gym.Env):
@@ -14,12 +20,7 @@ class Env2048(gym.Env):
         self.flatten = flatten
         self.n = n
         self.max_idle = max_idle
-        self.action_map = {
-            0: 'up',
-            1: 'down',
-            2: 'left',
-            3: 'right'
-        }
+        self.action_map = ACTION_MAP
         # up, down, left, right
         self.action_space = gym.spaces.Discrete(4)
         if self.flatten:
