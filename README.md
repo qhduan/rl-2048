@@ -1,18 +1,28 @@
 2048 Python & Reinforcement Learning
 ===========
 
-install dependencies
+## Test result
+
+Install dependencies
 
 ```bash
 pip3 install r requirements.txt
 ```
 
-run exists model
+Download [pretrained-model from GitHub release](https://github.com/qhduan/rl-2048/releases/tag/model)
 
-try seed:  313, 17, 57
+Run exists model
+
+Try seed:  313, 17, 57
 
 ```bash
 python3 predict.py --model_path models/20_2000000_22528.zip --seed=313
+```
+
+## Train
+
+```bash
+python3 train.py
 ```
 
 ## Readme original:

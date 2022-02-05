@@ -16,15 +16,15 @@ feature_mapping = {
 
 
 def train(
-    n_stack=4,
+    n_stack=2,
     feature='CustomCNN',
-    epochs=20,
+    epochs=100,
     n_envs=12,
     train_steps=10_0000,
     n_test=50,
     save_dir='models',
-    gamma=0.99,
-    learning_rate=1e-4
+    gamma=0.9,
+    learning_rate=1e-3
 ):
     check_env(Env2048())
     assert feature in feature_mapping
@@ -70,9 +70,9 @@ def main():
     import os
     from itertools import product
     from tqdm import tqdm
-    feature = 'CustomCNN', 'CustomCNNRes', 'CustomCNNBN', 'CustomCNN128'
-    n_stack = 2, 4,
-    gamma = 0.9, 0.99, 0.999
+    feature = 'CustomCNN', 'CustomCNN128', 'CustomCNNRes', 'CustomCNNBN'
+    n_stack = 2,
+    gamma = 0.5, 0.7, 0.9, 0.99, 0.999
     learning_rate = 1e-3, 1e-4,
     params = [
         {
@@ -93,4 +93,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    train()
