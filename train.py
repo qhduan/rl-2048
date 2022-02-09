@@ -5,13 +5,14 @@ from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import VecFrameStack
 
-from features import CustomCNN, CustomCNNBN, CustomCNNRes, CustomCNN128
+from features import CustomCNN, CustomCNNBN, CustomCNNRes, CustomCNN128, CustomCNNLSTM
 
 feature_mapping = {
     'CustomCNN': CustomCNN,
     'CustomCNN128': CustomCNN128,
     'CustomCNNBN': CustomCNNBN,
     'CustomCNNRes': CustomCNNRes,
+    'CustomCNNLSTM': CustomCNNLSTM
 }
 
 
@@ -70,7 +71,7 @@ def main():
     import os
     from itertools import product
     from tqdm import tqdm
-    feature = 'CustomCNN', 'CustomCNN128', 'CustomCNNRes', 'CustomCNNBN'
+    feature = 'CustomCNN', 'CustomCNN128', 'CustomCNNRes', 'CustomCNNBN', 'CustomCNNLSTM'
     n_stack = 2,
     gamma = 0.5, 0.7, 0.9, 0.99, 0.999
     learning_rate = 1e-3, 1e-4,
@@ -94,4 +95,6 @@ def main():
 
 if __name__ == '__main__':
     # main()
-    train()
+    # train()
+    from fire import Fire
+    Fire(train)

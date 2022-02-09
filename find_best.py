@@ -3,9 +3,9 @@ from tqdm import tqdm
 from fire import Fire
 
 
-def main(model_path, start=0, end=10000, out='best.csv'):
+def main(model_path, start=0, end=1000, out='best.csv'):
     """
-    python3 -u find_best.py --model_path=./models/20_2000000_22528.zip --out=best.csv --start=0 --end=10
+    python3 -u find_best.py --model_path=./models/23_2300000_19177.zip --out=best.csv --start=0 --end=1000
     cat *.csv|awk -F ',' '{print $1"\t"$2}' | grep "0" | sort -n --reverse -k 2,2 | head -n 20
     """
     best = None
@@ -20,7 +20,7 @@ def main(model_path, start=0, end=10000, out='best.csv'):
             if best is None or r > best_score:
                 best = i
                 best_score = r
-            pbar.set_description(f'best seed: {best}, score{best_score}')
+            pbar.set_description(f'best seed: {best}, score: {best_score}')
             f.write(f'{i},{r}\n')
             f.flush()
 

@@ -15,21 +15,17 @@ class Env2048(gym.Env):
 
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, n=4, max_idle=100, flatten=False, seed=None):
+    def __init__(self, n=4, max_idle=100, seed=None):
         super(Env2048, self).__init__()
-        self.flatten = flatten
         self.n = n
         self.max_idle = max_idle
         self.action_map = ACTION_MAP
         # up, down, left, right
         self.action_space = gym.spaces.Discrete(4)
-        if self.flatten:
-            self.observation_space = gym.spaces.Box(0.0, 2048.0, [self.n * self.n,])
-        else:
-            self.observation_space = gym.spaces.Box(
-                low=0, high=255,
-                shape=(self.n, self.n, 1025), dtype=np.uint8)
-            self.eye = np.eye(1025)
+        self.observation_space = gym.spaces.Box(
+            low=0, high=255,
+            shape=(self.n, self.n, 2 ** n), dtype=np.uint8)
+        self.eye = np.eye(2 ** n)
         self.reward_range = (float('-inf'), float('inf'))
         if seed is not None:
             self.seed(seed)
@@ -45,16 +41,13 @@ class Env2048(gym.Env):
 
     @property
     def obs(self):
-        if self.flatten:
-            obs = np.array(self.matrix).flatten()
-        else:
-            m = np.array(self.matrix)
-            m = m // 2  # from 2,4,6,...,2048 to 0,1,2,...,1023
-            # m = nn.functional.one_hot(torch.LongTensor(m), 1025)
-            m = self.eye[m]
-            m = m * 255
-            m = m.astype(np.uint8)
-            obs = m
+        m = np.array(self.matrix)
+        m = np.clip(m, 1, float('inf'))  # from 0, 2, 4, 8, ... to 1, 2, 4, 8
+        m = np.log2(m).astype(np.int64)  # from 1, 2, 4, 8,..., 2048 to 0, 1, 2, 3, ..., 11
+        m = self.eye[m]
+        m = m * 255
+        m = m.astype(np.uint8)
+        obs = m
         return obs
 
     def step(self, action):
@@ -81,7 +74,7 @@ class Env2048(gym.Env):
 
         new_matrix = str(self.matrix)
         new_score = np.sort(np.array(self.matrix).flatten())[::-1]
-        reward = np.sum((new_score - old_score) * (new_score >= old_score)) * 2
+        reward = np.sum((new_score - old_score) * (new_score >= old_score)) * 4
         reward = float(reward)
         self.total_reward += reward
 
@@ -90,26 +83,26 @@ class Env2048(gym.Env):
             self.matrix = logic.add_two(self.matrix)
 
             if logic.game_state(self.matrix) == 'win':
-                # 胜利
-                return self.obs, 100000.0, True, {'i': self.i, 'ri': self.reward_i, 'tr': self.total_reward}
+                print('you win')
+                return self.obs, 10000.0, True, {'i': self.i, 'ri': self.reward_i, 'tr': self.total_reward}
             elif logic.game_state(self.matrix) == 'lose':
-                # 失败
-                return self.obs, 1000.0, True, {'i': self.i, 'ri': self.reward_i, 'tr': self.total_reward}
+                return self.obs, 100.0, True, {'i': self.i, 'ri': self.reward_i, 'tr': self.total_reward}
 
-        # 要求矩阵至少变换，避免无效按键出现
+        idle = False
         if old_matrix == new_matrix:
-            reward -= 10
+            idle = True
 
-        if reward > 0:
+        if idle:
+            reward = -1
+        else:
             self.reward_i = self.i
-        elif self.i - self.reward_i > self.max_idle:
-            # 如果太长时间没变化，就结束
-            return self.obs, -5000, True, {'i': self.i, 'ri': self.reward_i, 'tr': self.total_reward}
+
+        if self.i - self.reward_i > self.max_idle:
+            return self.obs, -100, True, {'i': self.i, 'ri': self.reward_i, 'tr': self.total_reward}
 
         return self.obs, reward, False, {'i': self.i, 'ri': self.reward_i, 'tr': self.total_reward}
 
     def render(self, mode='human'):
-        # print(np.array(self.matrix))
         pass
     
     def close(self):
